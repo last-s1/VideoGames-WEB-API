@@ -20,7 +20,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _genreService.GetGenreList();
             switch (response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);
@@ -35,7 +35,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _genreService.AddGenre(genre);
             switch (response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);
@@ -50,7 +50,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _genreService.UpdateGenre(requestGenre);
             switch (response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);
@@ -65,7 +65,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _genreService.DeleteGenre(id);
             switch (response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);

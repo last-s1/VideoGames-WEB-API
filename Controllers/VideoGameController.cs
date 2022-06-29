@@ -20,7 +20,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _videoGameService.GetVideoGameList();
             switch (response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);
@@ -35,7 +35,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _videoGameService.GetVideoGame(id);
             switch(response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);
@@ -51,7 +51,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _videoGameService.AddVideoGame(videoGame);
             switch (response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);
@@ -66,7 +66,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _videoGameService.UpdateVideoGame(requestVideoGame);
             switch (response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);
@@ -81,7 +81,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _videoGameService.DeleteVideoGame(id);
             switch (response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);
@@ -96,7 +96,7 @@ namespace VideoGamesAPI.Controllers
             ResponseMessage response = await _videoGameService.GetVideoGamesFiltered(genreId);
             switch (response.StatusCode)
             {
-                case > 400:
+                case >= 400:
                     return Problem(
                         statusCode: response.StatusCode,
                         title: response.Message);
