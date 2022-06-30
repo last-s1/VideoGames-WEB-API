@@ -9,5 +9,6 @@ namespace VideoGamesAPI.Services
         public virtual DbSet<Genre> Genres { get; set; } = null!;
         public virtual DbSet<VideoGame> VideoGames { get; set; } = null!;
 
+
     }
 }

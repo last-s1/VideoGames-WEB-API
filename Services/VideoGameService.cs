@@ -90,28 +90,20 @@ namespace VideoGamesAPI.Services
                 await _dataContext.VideoGames.AddAsync(newVideoGame);
                 await _dataContext.SaveChangesAsync();
 
-
+                var existingGenres = await _dataContext.Genres.AsNoTracking().ToListAsync();
+                // Insert game-genre
                 foreach (var genreModel in videoGame.Genres)
                 {
-                    if (!_dataContext.Genres.Any(g => g.Id == genreModel.Id && g.Name != genreModel.Name))  //Проверка на попытку изменить наименование существующего жанра
-                    {
-                        // Insert genre
-                        var newGenre = new Genre
-                        {
-                            Id = genreModel.Id,
-                            Name = genreModel.Name
-                        };
-                        newVideoGame.Genres.Add(newGenre);
-                    }
+                    if (existingGenres.Any(g => g.Id == genreModel.Id && g.Name == genreModel.Name))
+                        newVideoGame.Genres.Add(genreModel);
                     else
                     {
                         success = false;
-                        response.StatusCode = 400;
-                        response.Message = $"Ошибка: обнаружено несовпадение данных по наименованию жанра ({genreModel.Name})";
+                        response.StatusCode = 404;
+                        response.Message = $"Ошибка: попытка добавить несуществующий жанр (Id : {genreModel.Id}, Name: {genreModel.Name})";
                         _dataContext.Database.RollbackTransaction();
                         break;
                     }
-
                 }
                 if (success)
                 {
@@ -159,7 +151,8 @@ namespace VideoGamesAPI.Services
                             videoGame.Genres.Remove(existingGenre);
                     }
 
-                    // Insert genre
+                    var existingGenres = await _dataContext.Genres.AsNoTracking().ToListAsync();
+                    // Insert game-genre
                     foreach (var genreModel in requestVideoGame.Genres)
                     {
                         var existingGenre = videoGame.Genres
@@ -168,21 +161,13 @@ namespace VideoGamesAPI.Services
 
                         if (existingGenre == null)
                         {
-                            if (!_dataContext.Genres.Any(g => g.Id == genreModel.Id && g.Name != genreModel.Name))  //Проверка на попытку изменить наименование существующего жанра
-                            {
-                                // Insert genre
-                                var newGenre = new Genre
-                                {
-                                    Id = genreModel.Id,
-                                    Name = genreModel.Name
-                                };
-                                videoGame.Genres.Add(newGenre);
-                            }
+                            if (existingGenres.Any(g => g.Id == genreModel.Id && g.Name == genreModel.Name))
+                                videoGame.Genres.Add(genreModel);
                             else
                             {
                                 success = false;
-                                response.StatusCode = 400;
-                                response.Message = $"Ошибка: обнаружено несовпадение данных по наименованию жанра ({genreModel.Name})";
+                                response.StatusCode = 404;
+                                response.Message = $"Ошибка: попытка добавить несуществующий жанр (Id : {genreModel.Id}, Name: {genreModel.Name})";
                                 break;
                             }
 
@@ -197,7 +182,7 @@ namespace VideoGamesAPI.Services
                 }
 
                 if (success)
-                {
+                { 
                     await _dataContext.SaveChangesAsync();
                     response.StatusCode = 200;
                     response.Message = "Видео игра успешно обновлена";
@@ -207,7 +192,7 @@ namespace VideoGamesAPI.Services
             {
                 _logger.LogError(ex.Message);
                 response.StatusCode = 500;
-                response.Message = "Ошибка: не удалось добавить видео игру";
+                response.Message = "Ошибка: не удалось обновить видео игру";
             }
 
             return response;
