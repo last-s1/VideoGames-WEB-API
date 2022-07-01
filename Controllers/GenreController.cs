@@ -15,9 +15,9 @@ namespace VideoGamesAPI.Controllers
         }
 
         [HttpGet("list")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] PageParameters pageParameters)
         {
-            ResponseMessage response = await _genreService.GetGenreList();
+            ResponseMessage response = await _genreService.GetGenreList(pageParameters);
             switch (response.StatusCode)
             {
                 case >= 400:
@@ -25,6 +25,7 @@ namespace VideoGamesAPI.Controllers
                         statusCode: response.StatusCode,
                         title: response.Message);
                 default:
+                    Response.Headers.Add("Pagination", response.Metadata);
                     return Ok(response.Content);
             }
         }

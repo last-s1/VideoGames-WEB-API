@@ -22,16 +22,21 @@ namespace VideoGamesAPI.Services
         /// Получить полный список жанров
         /// </summary>
         /// <returns></returns>
-        public async Task<ResponseMessage> GetGenreList()
+        public async Task<ResponseMessage> GetGenreList(PageParameters pageParameters)
         {
             ResponseMessage response = new ResponseMessage();
 
             try
             {
                 List<Genre> genres = await _dataContext.Genres.ToListAsync();
+                var pagedList = PagedList<Genre>.ToPagedList(genres, pageParameters.PageNumber, pageParameters.PageSize);
+
                 response.StatusCode = 200;
                 response.Message = "Список видео игр успешно получен";
-                response.Content = JsonSerializer.Serialize(genres, _jsonOption);
+                response.Content = JsonSerializer.Serialize(pagedList, _jsonOption);
+
+                var metadata = new PaginationMetaData<Genre>(pagedList);
+                response.Metadata = JsonSerializer.Serialize(metadata);
             }
             catch (Exception ex)
             {

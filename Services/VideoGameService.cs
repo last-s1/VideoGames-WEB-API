@@ -22,16 +22,23 @@ namespace VideoGamesAPI.Services
         /// Получить полный список видео игр
         /// </summary>
         /// <returns></returns>
-        public async Task<ResponseMessage> GetVideoGameList()
+        public async Task<ResponseMessage> GetVideoGameList(PageParameters pageParameters)
         {
             ResponseMessage response = new ResponseMessage();
 
             try
             {
-                List<VideoGame> videoGames = await _dataContext.VideoGames.Include(v => v.Genres).ToListAsync();
+                var videoGames = await _dataContext.VideoGames
+                                                        .Include(v => v.Genres)
+                                                        .ToListAsync();
+                var pagedList = PagedList<VideoGame>.ToPagedList(videoGames, pageParameters.PageNumber, pageParameters.PageSize);
+
                 response.StatusCode = 200;
                 response.Message = "Список видео игр успешно получен";
-                response.Content = JsonSerializer.Serialize(videoGames, _jsonOption);
+                response.Content = JsonSerializer.Serialize(pagedList, _jsonOption);
+
+                var metadata = new PaginationMetaData<VideoGame>(pagedList);
+                response.Metadata = JsonSerializer.Serialize(metadata);
             }
             catch (Exception ex)
             {
@@ -233,7 +240,7 @@ namespace VideoGamesAPI.Services
         /// </summary>
         /// <param name="genreId">Идентификатор жанра</param>
         /// <returns></returns>
-        public async Task<ResponseMessage> GetVideoGamesFiltered(int? genreId)
+        public async Task<ResponseMessage> GetVideoGamesFiltered(int? genreId, PageParameters pageParameters)
         {
             ResponseMessage response = new ResponseMessage();
             try
@@ -244,10 +251,14 @@ namespace VideoGamesAPI.Services
                                                         .Include(v => v.Genres)
                                                         .Where(v => v.Genres.Any(g => g.Id == genreId))
                                                         .ToListAsync();
+                    var pagedList = PagedList<VideoGame>.ToPagedList(videoGames, pageParameters.PageNumber, pageParameters.PageSize);
 
                     response.StatusCode = 200;
                     response.Message = $"Список видео игр отфильтрованный по жанру успешно получен (idGenre: {genreId})";
-                    response.Content = JsonSerializer.Serialize(videoGames, _jsonOption);
+                    response.Content = JsonSerializer.Serialize(pagedList, _jsonOption);
+
+                    var metadata = new PaginationMetaData<VideoGame>(pagedList);
+                    response.Metadata = JsonSerializer.Serialize(metadata);
                 }
             }
             catch(Exception ex)

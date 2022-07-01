@@ -15,9 +15,9 @@ namespace VideoGamesAPI.Controllers
         }
 
         [HttpGet("list")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] PageParameters pageParameters)
         {
-            ResponseMessage response = await _videoGameService.GetVideoGameList();
+            ResponseMessage response = await _videoGameService.GetVideoGameList(pageParameters);
             switch (response.StatusCode)
             {
                 case >= 400:
@@ -25,6 +25,7 @@ namespace VideoGamesAPI.Controllers
                         statusCode: response.StatusCode,
                         title: response.Message);
                 default:
+                    Response.Headers.Add("Pagination", response.Metadata);
                     return Ok(response.Content);
             }
         }
@@ -91,9 +92,9 @@ namespace VideoGamesAPI.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<IActionResult> GetFiltered(int? genreId)
+        public async Task<IActionResult> GetFiltered(int? genreId, [FromQuery] PageParameters pageParameters)
         {
-            ResponseMessage response = await _videoGameService.GetVideoGamesFiltered(genreId);
+            ResponseMessage response = await _videoGameService.GetVideoGamesFiltered(genreId, pageParameters);
             switch (response.StatusCode)
             {
                 case >= 400:
@@ -101,6 +102,7 @@ namespace VideoGamesAPI.Controllers
                         statusCode: response.StatusCode,
                         title: response.Message);
                 default:
+                    Response.Headers.Add("Pagination", response.Metadata);
                     return Ok(response.Content);
             }
         }
