@@ -238,27 +238,32 @@ namespace VideoGamesAPI.Services
         /// <summary>
         /// Получить отфильтрованный список видео игр
         /// </summary>
-        /// <param name="genreId">Идентификатор жанра</param>
+        /// <param name="arrGenreId">Идентификатор жанра</param>
         /// <returns></returns>
-        public async Task<ResponseMessage> GetVideoGamesFiltered(int? genreId, PageParameters pageParameters)
+        public async Task<ResponseMessage> GetVideoGamesFiltered(int?[] arrGenreId, PageParameters pageParameters)
         {
             ResponseMessage response = new ResponseMessage();
             try
             {
-                if (genreId.HasValue)
+                if (arrGenreId.Count() > 0)
                 {
                     List<VideoGame> videoGames = await _dataContext.VideoGames
                                                         .Include(v => v.Genres)
-                                                        .Where(v => v.Genres.Any(g => g.Id == genreId))
+                                                        .Where(v => v.Genres.Any(g => arrGenreId.Contains(g.Id)))
                                                         .ToListAsync();
                     var pagedList = PagedList<VideoGame>.ToPagedList(videoGames, pageParameters.PageNumber, pageParameters.PageSize);
 
                     response.StatusCode = 200;
-                    response.Message = $"Список видео игр отфильтрованный по жанру успешно получен (idGenre: {genreId})";
+                    response.Message = $"Список видео игр отфильтрованный по жанру успешно получен (idGenre: {arrGenreId})";
                     response.Content = JsonSerializer.Serialize(pagedList, _jsonOption);
 
                     var metadata = new PaginationMetaData<VideoGame>(pagedList);
                     response.Metadata = JsonSerializer.Serialize(metadata);
+                }
+                else
+                {
+                    response.StatusCode = 400;
+                    response.Message = $"Ошибка: в запрос не передано ни одного индентификатора жанра";
                 }
             }
             catch(Exception ex)

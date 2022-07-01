@@ -92,9 +92,9 @@ namespace VideoGamesAPI.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<IActionResult> GetFiltered(int? genreId, [FromQuery] PageParameters pageParameters)
+        public async Task<IActionResult> GetFiltered([FromQuery] int?[] arrGenreId, [FromQuery] PageParameters pageParameters)
         {
-            ResponseMessage response = await _videoGameService.GetVideoGamesFiltered(genreId, pageParameters);
+            ResponseMessage response = await _videoGameService.GetVideoGamesFiltered(arrGenreId, pageParameters);
             switch (response.StatusCode)
             {
                 case >= 400:
