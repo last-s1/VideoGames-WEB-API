@@ -31,14 +31,13 @@ namespace VideoGamesAPI.Services
                 var videoGames = await _dataContext.VideoGames
                                                         .Include(v => v.Genres)
                                                         .ToListAsync();
-                var pagedList = PagedList<VideoGame>.ToPagedList(videoGames, pageParameters.PageNumber, pageParameters.PageSize);
+
+                var pagedVideoGames = PagedList<VideoGame>.ToPagedList(videoGames, pageParameters.PageNumber, pageParameters.PageSize);
 
                 response.StatusCode = 200;
                 response.Message = "Список видео игр успешно получен";
-                response.Content = JsonSerializer.Serialize(pagedList, _jsonOption);
-
-                var metadata = new PaginationMetaData<VideoGame>(pagedList);
-                response.Metadata = JsonSerializer.Serialize(metadata);
+                response.Content = JsonSerializer.Serialize(pagedVideoGames, _jsonOption);
+                response.Metadata = pagedVideoGames.ReturnPaginationMetaData();
             }
             catch (Exception ex)
             {
@@ -251,14 +250,12 @@ namespace VideoGamesAPI.Services
                                                         .Include(v => v.Genres)
                                                         .Where(v => v.Genres.Any(g => arrGenreId.Contains(g.Id)))
                                                         .ToListAsync();
-                    var pagedList = PagedList<VideoGame>.ToPagedList(videoGames, pageParameters.PageNumber, pageParameters.PageSize);
+                    var pagedVideoGames = PagedList<VideoGame>.ToPagedList(videoGames, pageParameters.PageNumber, pageParameters.PageSize);
 
                     response.StatusCode = 200;
                     response.Message = $"Список видео игр отфильтрованный по жанру успешно получен (idGenre: {arrGenreId})";
-                    response.Content = JsonSerializer.Serialize(pagedList, _jsonOption);
-
-                    var metadata = new PaginationMetaData<VideoGame>(pagedList);
-                    response.Metadata = JsonSerializer.Serialize(metadata);
+                    response.Content = JsonSerializer.Serialize(pagedVideoGames, _jsonOption);
+                    response.Metadata = pagedVideoGames.ReturnPaginationMetaData();
                 }
                 else
                 {

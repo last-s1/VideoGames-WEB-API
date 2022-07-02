@@ -1,4 +1,6 @@
-﻿namespace VideoGamesAPI.Services
+﻿using System.Text.Json;
+
+namespace VideoGamesAPI.Services
 {
 	/// <summary>
 	/// Класс, реализующий логику пагинации и сохраняющий метаданные
@@ -30,6 +32,24 @@
 			var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
 			return new PagedList<T>(items, count, pageNumber, pageSize);
+		}
+
+		/// <summary>
+		/// Возвращает сериализованные мета данные пагинации
+		/// </summary>
+		public string ReturnPaginationMetaData()
+        {
+			var metadata = new
+			{
+				TotalCount,
+				PageSize,
+				CurrentPage,
+				TotalPages,
+				HasNext,
+				HasPrevious
+			};
+
+			return JsonSerializer.Serialize(metadata);
 		}
 	}
 }

@@ -25,7 +25,7 @@ namespace VideoGamesAPI.Controllers
                         statusCode: response.StatusCode,
                         title: response.Message);
                 default:
-                    Response.Headers.Add("Pagination", response.Metadata);
+                    Response.Headers.Add("pagination", response.Metadata);
                     return Ok(response.Content);
             }
         }
