@@ -16,6 +16,8 @@ builder.Services.AddTransient<IVideoGameService, VideoGameService>();
 builder.Services.AddTransient<IGenreService, GenreService>();
 builder.Services.AddTransient<DbContext, DataContext>();
 
+builder.Services.AddAutoMapper(typeof(AppMappingProfile));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

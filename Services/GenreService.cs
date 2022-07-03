@@ -34,7 +34,7 @@ namespace VideoGamesAPI.Services
                 response.StatusCode = 200;
                 response.Message = "Список видео игр успешно получен";
                 response.Content = JsonSerializer.Serialize(pagedGenres, _jsonOption);
-                response.Metadata = pagedGenres.ReturnPaginationMetaData();
+                response.Metadata.Add("pagination", pagedGenres.ReturnPaginationMetaData());
             }
             catch (Exception ex)
             {

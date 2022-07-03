@@ -37,7 +37,7 @@ namespace VideoGamesAPI.Services
                 response.StatusCode = 200;
                 response.Message = "Список видео игр успешно получен";
                 response.Content = JsonSerializer.Serialize(pagedVideoGames, _jsonOption);
-                response.Metadata = pagedVideoGames.ReturnPaginationMetaData();
+                response.Metadata.Add("pagination", pagedVideoGames.ReturnPaginationMetaData());
             }
             catch (Exception ex)
             {
@@ -255,7 +255,7 @@ namespace VideoGamesAPI.Services
                     response.StatusCode = 200;
                     response.Message = $"Список видео игр отфильтрованный по жанру успешно получен (idGenre: {arrGenreId})";
                     response.Content = JsonSerializer.Serialize(pagedVideoGames, _jsonOption);
-                    response.Metadata = pagedVideoGames.ReturnPaginationMetaData();
+                    response.Metadata.Add("pagination", pagedVideoGames.ReturnPaginationMetaData());
                 }
                 else
                 {

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using VideoGamesAPI.Models;
+using VideoGamesAPI.ViewModel;
 
 namespace VideoGamesAPI.Controllers
 {
@@ -8,10 +10,12 @@ namespace VideoGamesAPI.Controllers
     public class GenreController : Controller
     {
         private readonly IGenreService _genreService;
+        private readonly IMapper _mapper;
 
-        public GenreController(IGenreService genreService)
+        public GenreController(IGenreService genreService, IMapper mapper)
         {
             _genreService = genreService;
+            _mapper = mapper;
         }
 
         [HttpGet("list")]
@@ -25,15 +29,15 @@ namespace VideoGamesAPI.Controllers
                         statusCode: response.StatusCode,
                         title: response.Message);
                 default:
-                    Response.Headers.Add("pagination", response.Metadata);
+                    Response.Headers.Add("pagination", response.Metadata["pagination"]);
                     return Ok(response.Content);
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Genre genre)
+        public async Task<IActionResult> Add(CreateGenreModel genreModel)
         {
-            ResponseMessage response = await _genreService.AddGenre(genre);
+            ResponseMessage response = await _genreService.AddGenre(_mapper.Map<Genre>(genreModel));
             switch (response.StatusCode)
             {
                 case >= 400:
@@ -46,9 +50,9 @@ namespace VideoGamesAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(Genre requestGenre)
+        public async Task<IActionResult> Update(GenreModel genreModel)
         {
-            ResponseMessage response = await _genreService.UpdateGenre(requestGenre);
+            ResponseMessage response = await _genreService.UpdateGenre(_mapper.Map<Genre>(genreModel));
             switch (response.StatusCode)
             {
                 case >= 400:

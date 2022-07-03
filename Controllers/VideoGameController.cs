@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using VideoGamesAPI.Models;
+using VideoGamesAPI.ViewModel;
 
 namespace VideoGamesAPI.Controllers
 {
@@ -8,10 +10,12 @@ namespace VideoGamesAPI.Controllers
     public class VideoGameController : ControllerBase
     {
         private readonly IVideoGameService _videoGameService;
+        private readonly IMapper _mapper;
 
-        public VideoGameController(IVideoGameService videoGameService)
+        public VideoGameController(IVideoGameService videoGameService, IMapper mapper)
         {
             _videoGameService = videoGameService;
+            _mapper = mapper;
         }
 
         [HttpGet("list")]
@@ -25,7 +29,7 @@ namespace VideoGamesAPI.Controllers
                         statusCode: response.StatusCode,
                         title: response.Message);
                 default:
-                    Response.Headers.Add("pagination", response.Metadata);
+                    Response.Headers.Add("pagination", response.Metadata["pagination"]);
                     return Ok(response.Content);
             }
         }
@@ -47,9 +51,9 @@ namespace VideoGamesAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(VideoGame videoGame)
+        public async Task<IActionResult> Add(CreateVideoGameModel videoGameModel)
         {
-            ResponseMessage response = await _videoGameService.AddVideoGame(videoGame);
+            ResponseMessage response = await _videoGameService.AddVideoGame(_mapper.Map<VideoGame>(videoGameModel));
             switch (response.StatusCode)
             {
                 case >= 400:
@@ -62,9 +66,9 @@ namespace VideoGamesAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(VideoGame requestVideoGame)
+        public async Task<IActionResult> Update(VideoGameModel videoGameModel)
         {
-            ResponseMessage response = await _videoGameService.UpdateVideoGame(requestVideoGame);
+            ResponseMessage response = await _videoGameService.UpdateVideoGame(_mapper.Map<VideoGame>(videoGameModel));
             switch (response.StatusCode)
             {
                 case >= 400:
@@ -102,7 +106,7 @@ namespace VideoGamesAPI.Controllers
                         statusCode: response.StatusCode,
                         title: response.Message);
                 default:
-                    Response.Headers.Add("pagination", response.Metadata);
+                    Response.Headers.Add("pagination", response.Metadata["pagination"]);
                     return Ok(response.Content);
             }
         }
